@@ -1,6 +1,7 @@
 import { existsSync } from 'fs'
 import path = require('path')
-import { readFile, readdir } from 'fs-extra'
+import { readFile } from 'fs-extra'
+import type { PackageJson } from 'type-fest'
 import type { WorkspaceFolder } from 'vscode'
 import { getVitestPath } from './utils'
 
@@ -15,8 +16,8 @@ export async function isVitestEnv(projectRoot: string | WorkspaceFolder): Promis
     return false
 
   const pkgPath = path.join(projectRoot, 'package.json') as string
-  const pkg = JSON.parse(await readFile(pkgPath, 'utf-8')) as any
-  if (existsSync(pkg)) {
+  const pkg = JSON.parse(await readFile(pkgPath, 'utf-8')) as PackageJson
+  if (existsSync(pkgPath) && pkg) {
     if (pkg.devDependencies && pkg.devDependencies.vitest)
       return true
 
@@ -37,12 +38,6 @@ export async function isVitestEnv(projectRoot: string | WorkspaceFolder): Promis
 
   if (existsSync(path.join(projectRoot, 'jest.config.js')))
     return false
-
-  // monorepo
-  if (existsSync(path.join(projectRoot, 'packages'))) {
-    const dirs = await readdir(path.join(projectRoot, 'packages'))
-    return dirs.some(dir => isVitestEnv(dir))
-  }
 
   return false
 }
