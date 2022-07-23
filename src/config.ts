@@ -2,6 +2,7 @@ import * as vscode from 'vscode'
 import semver from 'semver'
 import type { WorkspaceConfiguration, WorkspaceFolder } from 'vscode'
 import { isVitestEnv } from './pure/isVitestEnv'
+import { getWorkspaceFolders, isMonorepo } from './pure/monorepo'
 import { getVitestCommand, getVitestVersion, isNodeAvailable } from './pure/utils'
 import { log } from './log'
 export const extensionId = 'zxch3n.vitest-explorer'
@@ -56,8 +57,16 @@ export async function detectVitestEnvironmentFolders() {
     return
 
   for (const folder of vscode.workspace.workspaceFolders) {
-    if (await isVitestEnv(folder) || getConfig(folder).enable)
+    if (await isMonorepo(folder)) {
+      const workspaceFolders = await getWorkspaceFolders(folder)
+      for (const workspaceFolder of workspaceFolders) {
+        if (await isVitestEnv(workspaceFolder))
+          vitestFolders.push(workspaceFolder)
+      }
+    }
+    else if (await isVitestEnv(folder) || getConfig(folder).enable) {
       vitestFolders.push(folder)
+    }
   }
 }
 
