@@ -170,10 +170,12 @@
     "semver": "^7.3.5",
     "stack-utils": "^2.0.5",
     "tsup": "^5.12.7",
+    "type-fest": "^2.17.0",
     "typescript": "^4.5.5",
     "vite": "^2.8.6",
     "vitest": "latest",
-    "ws": "^8.6.0"
+    "ws": "^8.6.0",
+    "yaml": "^2.1.1"
   },
   "lint-staged": {
     "*.{js,ts,tsx,vue,md}": [
